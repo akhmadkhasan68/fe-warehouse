@@ -1,28 +1,31 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <div v-if="$route.meta.errorNotFound">
+      <router-view></router-view>
+    </div>
+    <div v-else>
+      <div class="min-height-150 bg-primary position-absolute w-100"></div>
+      <side-navbar-component/>
+      <main class="main-content position-relative border-radius-lg">
+        <navbar-component/>
+        <div class="container-fluid py-4">
+          <router-view></router-view>
+          <footer-component/>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import SideNavbarComponent from '@/components/side_navbar/SideNavbarComponent.vue'
+import NavbarComponent from '@/components/navbar/NavbarComponent.vue'
+import FooterComponent from '@/components/footer/FooterComponent.vue'
 export default {
-  name: 'App',
   components: {
-    HelloWorld
-  }
+    SideNavbarComponent,
+    NavbarComponent,
+    FooterComponent
+  },
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
