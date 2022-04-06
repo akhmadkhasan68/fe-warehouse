@@ -5,10 +5,10 @@
                 <div class="card ">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="form-group">
                                     <label for="example-text-input" class="form-control-label">Nama Operator</label>
-                                    <select class="form-control" id="exampleFormControlSelect1">
+                                    <select class="form-control" id="exampleFormControlSelect1" v-model="formData.operator_id">
                                         <option value="">Pilih Operator</option>
                                         <option v-for="operator in operatorOptions" :key="operator" :value="operator.value">
                                             {{ operator.text }}
@@ -16,10 +16,21 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label for="example-text-input" class="form-control-label">Outlet</label>
+                                    <select class="form-control" id="exampleFormControlSelect1" v-model="formData.outlet_id">
+                                        <option value="">Pilih Outlet</option>
+                                        <option v-for="outlet in outletsOptions" :key="outlet" :value="outlet.value">
+                                            {{ outlet.text }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
                                 <div class="form-group">
                                     <label for="example-text-input" class="form-control-label">Tanggal</label>
-                                    <flat-pickr class="form-control" v-model="date"></flat-pickr>
+                                    <flat-pickr class="form-control" v-model="formData.date"></flat-pickr>
                                 </div>
                             </div>
                         </div>
@@ -38,16 +49,16 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-if="itemForms.length < 1">
+                                                <tr v-if="formData.products.length < 1">
                                                     <td colspan="5">
                                                         <center>
                                                             <span class="text-sm">Belum Ada Item</span>
                                                         </center>
                                                     </td>
                                                 </tr>
-                                                <tr v-else v-for="(item, key) in itemForms" :key="key">
+                                                <tr v-else v-for="(item, key) in formData.products" :key="key">
                                                     <td>
-                                                        <select class="form-control" id="exampleFormControlSelect1" v-model="item.item_id">
+                                                        <select class="form-control" id="exampleFormControlSelect1" v-model="item.product_id" @change="changeProduct(key)">
                                                             <option value="">Pilih Barang Ke-{{ key+1 }}</option>
                                                             <option v-for="product in productsOptions" :key="product" :value="product.value">
                                                                 {{ product.text }}
@@ -55,17 +66,18 @@
                                                         </select>
                                                     </td>
                                                     <td>
-                                                        <p class="text-xs font-weight-bold mb-0">{{ item.avg_price }}</p>
+                                                        <p class="text-xs font-weight-bold mb-0">Rp.{{ item.avg_price }}</p>
                                                     </td>
                                                     <td>
                                                         <div class="input-group">
-                                                            <input class="form-control" placeholder="Masukkan Harga" type="text" :value="item.price">
+                                                            <span class="input-group-text">Rp.</span>
+                                                            <input class="form-control" placeholder="Masukkan Harga" type="text" v-model="item.price">
                                                             <span class="input-group-text" v-if="item.unit !== ''">@{{item.unit}}</span>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="input-group">
-                                                            <input class="form-control" placeholder="Masukkan Jumlah" type="text" :value="item.quantity">
+                                                            <input class="form-control" placeholder="Masukkan Jumlah" type="text" v-model="item.quantity">
                                                             <span class="input-group-text" v-if="item.unit !== ''">/{{item.unit}}</span>
                                                         </div>
                                                     </td>
@@ -102,32 +114,43 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import $axios from "@/services/api"
+
 export default {
     data(){
         return {
-            date: new Date(),
-            itemForms: [
-                {
-                    unit: "",
-                    item_id: "",
-                    avg_price: 0,
-                    price: "",
-                    quantity: 0
-                }
-            ]
+            formData: {
+                operator_id: "",
+                outlet_id: "",
+                date: new Date(),
+                status: "in",
+                products: [
+                    {
+                        unit: "",
+                        product_id: "",
+                        avg_price: 0,
+                        price: "",
+                        quantity: 0
+                    }
+                ]
+            }
         }
     },
     created() {
         this.getDataOperators()
         this.getDataProducts()
+        this.getDataOutlets()
     },
     computed:{
         ...mapState('operators', {
             dataOperators: state => state.dataOperators
         }),
         ...mapState('products', {
-            dataProducts: state => state.dataProducts
+            dataProducts: state => state.dataProducts,
         }),
+        // ...mapState('outlets', {
+        //     dataOutlets: state => state.dataOutlets,
+        // }),
         operatorOptions(){
             let options =  []
             this.dataOperators.map(data => {
@@ -150,26 +173,71 @@ export default {
 
             return options
         },
+        outletsOptions(){
+            let options =  []
+            this.$store.state.outlets.dataOutlets.map(data => {
+                options.push({
+                    value: data.id,
+                    text: data.name
+                })
+            });
+
+            return options
+        },
     },
     methods:{
         ...mapActions('operators', ['getDataOperators']),
-        ...mapActions('products', ['getDataProducts']),
+        ...mapActions('products', ['getDataProducts', 'getDetailProduct']),
+        ...mapActions('outlets', ['getDataOutlets']),
         addItem(){
-            this.itemForms.push({
+            this.formData.products.push({
                 unit: "",
-                item_id: "",
+                product_id: "",
                 avg_price: 0,
                 price: "",
                 quantity: 0
             })
         },
+        resetForm(){
+            this.formData = {
+                operator_id: "",
+                outlet_id: "",
+                date: new Date(),
+                status: "in",
+                products: [
+                    {
+                        unit: "",
+                        product_id: "",
+                        avg_price: 0,
+                        price: "",
+                        quantity: 0
+                    }
+                ]
+            }
+        },
         deleteItem(index)
         {
-            this.itemForms.splice(index, 1);
+            this.formData.products.splice(index, 1);
+        },
+        changeProduct(key)
+        {
+            this.getDetailProduct(this.formData.products[key].product_id).then(response => {
+                this.formData.products[key].unit = response.unit.name
+                this.formData.products[key].avg_price = response.avg_price
+            }).catch(err => console.log(err))
         },
         saveAll(){
-            console.log(this.itemForms);
-        }
+            $axios.post(`/operator/transactions`, this.formData)
+            .then((response) => {
+                this.$toastr.s("Berhasil menambahkan transaksi");
+                this.resetForm()
+            })
+            .catch((error) => {
+                error.map(message => {
+                    this.$toastr.e(message);
+                })
+            })
+        },
     }
 }
 </script>

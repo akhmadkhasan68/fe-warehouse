@@ -41,6 +41,16 @@ const mutations = {
             })
         })
     },
+    getDataOutlets({state, commit}, payload){
+        return new Promise((resolve, reject) => {
+            $axios.get(`/operator/outlets`).then(response => {
+                commit('ASSIGN_DATA', response.data.data)
+                resolve(response.data.data)
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    },
  }
  
  export default {

@@ -2,6 +2,7 @@ import $axios from "../services/api"
 
 const state = () => ({
     dataProducts: [],
+    dataDetailProduct: [],
     dataPaginateProducts: [],
     page: 1,
     keyword: ""
@@ -10,6 +11,10 @@ const state = () => ({
 const mutations = {
     ASSIGN_DATA(state, payload) {
         state.dataProducts = payload
+    },
+
+    ASSIGN_DATA_DETAIL(state, payload){
+        state.dataDetailProduct = payload
     },
     
     ASSIGN_PAGINATE_DATA(state, payload) {
@@ -56,6 +61,16 @@ const mutations = {
             })
         })
     },
+    getDetailProduct({state, commit}, payload){
+        return new Promise((resolve, reject) => {
+            $axios.get(`/operator/products/${payload}`)
+            .then(response => {
+                resolve(response.data.data)
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
  }
  
  export default {
