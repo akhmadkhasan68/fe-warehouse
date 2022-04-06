@@ -5,7 +5,7 @@
                 <div class="card ">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-4">
+                            <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="example-text-input" class="form-control-label">Nama Operator</label>
                                     <select class="form-control" id="exampleFormControlSelect1" v-model="formData.operator_id">
@@ -16,18 +16,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <label for="example-text-input" class="form-control-label">Outlet</label>
-                                    <select class="form-control" id="exampleFormControlSelect1" v-model="formData.outlet_id">
-                                        <option value="">Pilih Outlet</option>
-                                        <option v-for="outlet in outletsOptions" :key="outlet" :value="outlet.value">
-                                            {{ outlet.text }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="example-text-input" class="form-control-label">Tanggal</label>
                                     <flat-pickr class="form-control" v-model="formData.date"></flat-pickr>
@@ -116,13 +105,14 @@
 import { mapActions, mapState } from 'vuex'
 import $axios from "@/services/api"
 
+const date = new Date();
+
 export default {
     data(){
         return {
             formData: {
                 operator_id: "",
-                outlet_id: "",
-                date: new Date(),
+                date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
                 status: "in",
                 products: [
                     {
@@ -139,21 +129,11 @@ export default {
     created() {
         this.getDataOperators()
         this.getDataProducts()
-        this.getDataOutlets()
     },
     computed:{
-        ...mapState('operators', {
-            dataOperators: state => state.dataOperators
-        }),
-        ...mapState('products', {
-            dataProducts: state => state.dataProducts,
-        }),
-        // ...mapState('outlets', {
-        //     dataOutlets: state => state.dataOutlets,
-        // }),
         operatorOptions(){
             let options =  []
-            this.dataOperators.map(data => {
+            this.$store.state.operators.dataOperators.map(data => {
                 options.push({
                     value: data.id,
                     text: data.name
@@ -164,18 +144,7 @@ export default {
         },
         productsOptions(){
             let options =  []
-            this.dataProducts.map(data => {
-                options.push({
-                    value: data.id,
-                    text: data.name
-                })
-            });
-
-            return options
-        },
-        outletsOptions(){
-            let options =  []
-            this.$store.state.outlets.dataOutlets.map(data => {
+            this.$store.state.products.dataProducts.map(data => {
                 options.push({
                     value: data.id,
                     text: data.name
@@ -188,7 +157,6 @@ export default {
     methods:{
         ...mapActions('operators', ['getDataOperators']),
         ...mapActions('products', ['getDataProducts', 'getDetailProduct']),
-        ...mapActions('outlets', ['getDataOutlets']),
         addItem(){
             this.formData.products.push({
                 unit: "",
@@ -201,8 +169,7 @@ export default {
         resetForm(){
             this.formData = {
                 operator_id: "",
-                outlet_id: "",
-                date: new Date(),
+                date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
                 status: "in",
                 products: [
                     {
