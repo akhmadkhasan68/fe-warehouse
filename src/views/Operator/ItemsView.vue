@@ -32,21 +32,29 @@
                                     <tr>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">No.</th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">Nama</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">Kategori</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">Satuan</th>
                                         <th class="text-secondary opacity-7"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-if="dataPaginateItems.data.length == 0">
+                                    <tr v-if="dataPaginateProducts.data.length == 0">
                                         <td colspan="3" class="align-middle text-center">
                                             <p class="text-xs font-weight-bold mb-0">Data Kosong!</p>
                                         </td>
                                     </tr>
-                                    <tr v-for="(data, key) in dataPaginateItems.data" :key="key" v-else>
+                                    <tr v-for="(data, key) in dataPaginateProducts.data" :key="key" v-else>
                                         <td class="align-middle text-center">
                                             <p class="text-xs font-weight-bold mb-0">{{ key+1 }}</p>
                                         </td>
                                         <td class="align-middle text-center">
                                             <p class="text-xs font-weight-bold mb-0">{{ data.name }}</p>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <p class="text-xs font-weight-bold mb-0">{{ data.category.name }}</p>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <p class="text-xs font-weight-bold mb-0">{{ data.unit.name }}</p>
                                         </td>
                                         <td class="align-middle text-center">
                                             <button class="btn btn-success btn-sm mx-2" @click="editData(data)">
@@ -67,10 +75,10 @@
                 <div class="col-12 col-md-12 col-xl-12">
                     <b-pagination
                     v-model="page"
-                    :total-rows="dataPaginateItems.total"
-                    :per-page="dataPaginateItems.per_page"
-                    aria-controls="dataPaginateItems"
-                    v-if="dataPaginateItems && dataPaginateItems.data.length > 0"
+                    :total-rows="dataPaginateProducts.total"
+                    :per-page="dataPaginateProducts.per_page"
+                    aria-controls="dataPaginateProducts"
+                    v-if="dataPaginateProducts && dataPaginateProducts.data.length > 0"
                     ></b-pagination>
                 </div>
             </div>
@@ -90,23 +98,21 @@
                 </div>
                 <div class="form-group">
                     <label for="recipient-name" class="col-form-label">Kategori Barang:</label>
-                    <b-form-select
-                    class="form-control"
-                    id="input-3"
-                    v-model="formData.category_id"
-                    :options="categoriesOptions"
-                    required
-                    ></b-form-select>
+                    <select class="form-control" id="exampleFormControlSelect1" v-model="formData.category_id" required>
+                        <option value="">Pilih Kategori</option>
+                        <option v-for="category in categoriesOptions" :key="category" :value="category.value">
+                            {{ category.text }}
+                        </option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="message-text" class="col-form-label">Satuan:</label>
-                    <b-form-select
-                    class="form-control"
-                    id="input-3"
-                    v-model="formData.unit_id"
-                    :options="unitsOptions"
-                    required
-                    ></b-form-select>
+                    <select class="form-control" id="exampleFormControlSelect1" v-model="formData.unit_id" required>
+                        <option value="">Pilih Satuan</option>
+                        <option v-for="unit in unitsOptions" :key="unit" :value="unit.value">
+                            {{ unit.text }}
+                        </option>
+                    </select>
                 </div>
             </form>
         </b-modal>
@@ -125,23 +131,21 @@
                 </div>
                 <div class="form-group">
                     <label for="recipient-name" class="col-form-label">Kategori Barang:</label>
-                    <b-form-select
-                    class="form-control"
-                    id="input-3"
-                    v-model="formDataEdit.category_id"
-                    :options="categoriesOptions"
-                    required
-                    ></b-form-select>
+                    <select class="form-control" id="exampleFormControlSelect1" v-model="formDataEdit.category_id" required>
+                        <option value="">Pilih Kategori</option>
+                        <option v-for="category in categoriesOptions" :key="category" :value="category.value">
+                            {{ category.text }}
+                        </option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="message-text" class="col-form-label">Satuan:</label>
-                    <b-form-select
-                    class="form-control"
-                    id="input-3"
-                    v-model="formDataEdit.unit_id"
-                    :options="unitsOptions"
-                    required
-                    ></b-form-select>
+                    <select class="form-control" id="exampleFormControlSelect1" v-model="formDataEdit.unit_id" required>
+                        <option value="">Pilih Satuan</option>
+                        <option v-for="unit in unitsOptions" :key="unit" :value="unit.value">
+                            {{ unit.text }}
+                        </option>
+                    </select>
                 </div>
             </form>
         </b-modal>
@@ -173,7 +177,7 @@ export default {
     created() {
         this.getDataUnits()
         this.getDataCategories()
-        this.getPaginateDataItems()
+        this.getPaginateDataProducts()
     },
     computed:{
         ...mapState('units', {
@@ -182,8 +186,8 @@ export default {
         ...mapState('categories', {
             dataCategories: state => state.dataCategories
         }),
-        ...mapState('items', {
-            dataPaginateItems: state => state.dataPaginateItems,
+        ...mapState('products', {
+            dataPaginateProducts: state => state.dataPaginateProducts,
             page: state => state.page,
             keyword: state => state.keyword
         }),
@@ -211,25 +215,25 @@ export default {
         },
         page: {
             get() {
-                return this.$store.state.items.page
+                return this.$store.state.products.page
             },
             set(val) {
-                this.$store.commit('items/SET_PAGE', val)
+                this.$store.commit('products/SET_PAGE', val)
             }
         },
         keyword: {
             get() {
-                return this.$store.state.items.keyword
+                return this.$store.state.products.keyword
             },
             set(val) {
-                this.$store.commit('items/SET_KEYWORD', val)
+                this.$store.commit('products/SET_KEYWORD', val)
             }
         }
     },
     methods:{
         ...mapActions('units', ['getDataUnits']),
         ...mapActions('categories', ['getDataCategories']),
-        ...mapActions('items', ['getPaginateDataItems']),
+        ...mapActions('products', ['getPaginateDataProducts']),
         resetForm(){
             this.formData = {
                 category_id: "",
@@ -257,6 +261,7 @@ export default {
         deleteData(id){
             this.$swal.fire({
                 title: 'Apakah anda yakin untuk menghapus data ini?',
+                text: 'Menghapus data barang akan berpengaruh ke data transaksi yang terkait dengan outlet ini',
                 showDenyButton: false,
                 showCancelButton: true,
                 confirmButtonText: 'Ya',
@@ -264,8 +269,8 @@ export default {
                 if (result.isConfirmed) {
                     $axios.delete(`/operator/products/${id}`)
                     .then(response => {
-                        this.$toastr.s("Berhasil menghapus items");
-                        this.getPaginateDataItems()
+                        this.$toastr.s("Berhasil menghapus barang");
+                        this.getPaginateDataProducts()
                     }).catch(error => {
                         error.map(message => {
                             this.$toastr.e(message);
@@ -285,8 +290,8 @@ export default {
         submitAddFormData(){
             $axios.post(`/operator/products`, this.formData)
             .then((response) => {
-                this.$toastr.s("Berhasil menambahkan items");
-                this.getPaginateDataItems()
+                this.$toastr.s("Berhasil menambahkan barang");
+                this.getPaginateDataProducts()
                 this.modalShow = false
                 this.resetForm()
             })
@@ -299,8 +304,8 @@ export default {
         submitEditFormData(){
             $axios.patch(`/operator/products/${this.formDataEdit.id}`, this.formDataEdit)
             .then((response) => {
-                this.$toastr.s("Berhasil mengubah items");
-                this.getPaginateDataItems()
+                this.$toastr.s("Berhasil mengubah barang");
+                this.getPaginateDataProducts()
                 this.modalEditShow = false
                 this.resetForm()
             })
@@ -313,10 +318,10 @@ export default {
     },
     watch: {
       page() {
-        this.getPaginateDataItems()
+        this.getPaginateDataProducts()
       },
       keyword() {
-        this.getPaginateDataItems()
+        this.getPaginateDataProducts()
       }
    },
 }

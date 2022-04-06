@@ -13,7 +13,6 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 
-// import $ from 'jquery'
 
 Vue.config.productionTip = false
 
@@ -21,7 +20,6 @@ Vue.use(VueSweetalert2)
 Vue.use(BootstrapVue)
 Vue.use(VueFlatPickr);
 Vue.use(VueToastr$1)
-// Vue.use($)
 
 new Vue({
   router,

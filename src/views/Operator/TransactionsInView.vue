@@ -8,12 +8,12 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="example-text-input" class="form-control-label">Nama Operator</label>
-                                    <b-form-select
-                                    class="form-control"
-                                    id="input-3"
-                                    :options="operatorOptions"
-                                    required
-                                    ></b-form-select>
+                                    <select class="form-control" id="exampleFormControlSelect1">
+                                        <option value="">Pilih Operator</option>
+                                        <option v-for="operator in operatorOptions" :key="operator" :value="operator.value">
+                                            {{ operator.text }}
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -47,12 +47,12 @@
                                                 </tr>
                                                 <tr v-else v-for="(item, key) in itemForms" :key="key">
                                                     <td>
-                                                        <b-form-select
-                                                        class="form-control"
-                                                        id="input-3"
-                                                        :options="operatorOptions"
-                                                        required
-                                                        ></b-form-select>
+                                                        <select class="form-control" id="exampleFormControlSelect1" v-model="item.item_id">
+                                                            <option value="">Pilih Barang Ke-{{ key+1 }}</option>
+                                                            <option v-for="product in productsOptions" :key="product" :value="product.value">
+                                                                {{ product.text }}
+                                                            </option>
+                                                        </select>
                                                     </td>
                                                     <td>
                                                         <p class="text-xs font-weight-bold mb-0">{{ item.avg_price }}</p>
@@ -60,24 +60,24 @@
                                                     <td>
                                                         <div class="input-group">
                                                             <input class="form-control" placeholder="Masukkan Harga" type="text" :value="item.price">
-                                                            <span class="input-group-text">@Kg</span>
+                                                            <span class="input-group-text" v-if="item.unit !== ''">@{{item.unit}}</span>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="input-group">
                                                             <input class="form-control" placeholder="Masukkan Jumlah" type="text" :value="item.quantity">
-                                                            <span class="input-group-text">/Kg</span>
+                                                            <span class="input-group-text" v-if="item.unit !== ''">/{{item.unit}}</span>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <a style="cursor:pointer;" @click="deleteItem(key)" class="text-danger font-weight-bold" data-toggle="tooltip" data-original-title="Hapus Item Ini">
-                                                            <font-awesome-icon icon="trash" />
+                                                            <i class="fa fa-trash"></i>
                                                         </a>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="5">
-                                                        <button @click="addItem()" class="btn btn-outline-primary btn-md w-100"><font-awesome-icon icon="plus" /> Tambah</button>
+                                                        <button @click="addItem()" class="btn btn-outline-primary btn-md w-100"><i class="fa fa-plus"></i> Tambah</button>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -93,7 +93,7 @@
         <div class="row mt-3">
             <div class="col-lg-3">
                 <button @click="saveAll()" class="btn btn-primary w-100">
-                    <font-awesome-icon icon="check"/> Simpan
+                    <i class="fa fa-check"></i> Simpan
                 </button>
             </div>
         </div>
@@ -108,22 +108,25 @@ export default {
             date: new Date(),
             itemForms: [
                 {
+                    unit: "",
                     item_id: "",
                     avg_price: 0,
-                    price: 0,
+                    price: "",
                     quantity: 0
                 }
             ]
         }
     },
     created() {
-        this.getDataOperators().then(response => {
-            console.log(response)
-        }).catch(err => console.log(err))
+        this.getDataOperators()
+        this.getDataProducts()
     },
     computed:{
         ...mapState('operators', {
             dataOperators: state => state.dataOperators
+        }),
+        ...mapState('products', {
+            dataProducts: state => state.dataProducts
         }),
         operatorOptions(){
             let options =  []
@@ -135,15 +138,28 @@ export default {
             });
 
             return options
-        }
+        },
+        productsOptions(){
+            let options =  []
+            this.dataProducts.map(data => {
+                options.push({
+                    value: data.id,
+                    text: data.name
+                })
+            });
+
+            return options
+        },
     },
     methods:{
         ...mapActions('operators', ['getDataOperators']),
+        ...mapActions('products', ['getDataProducts']),
         addItem(){
             this.itemForms.push({
+                unit: "",
                 item_id: "",
                 avg_price: 0,
-                price: 0,
+                price: "",
                 quantity: 0
             })
         },

@@ -3,7 +3,8 @@ import $axios from "../services/api"
 const state = () => ({
     dataProducts: [],
     dataPaginateProducts: [],
-    page: 1
+    page: 1,
+    keyword: ""
 })
 
 const mutations = {
@@ -18,12 +19,36 @@ const mutations = {
     SET_PAGE(state, payload) {
         state.page = payload
     },
+
+    SET_KEYWORD(state, payload) {
+        state.keyword = payload
+    },
  }
  
  const actions = {
     getPaginateDataProducts({state, commit}, payload){
         return new Promise((resolve, reject) => {
-            $axios.get(`/operator/products`).then(response => {
+            $axios.get(`/operator/products/paginate`, {
+                params: {
+                    page: state.page,
+                    keyword: state.keyword
+                }
+            }).then(response => {
+                commit('ASSIGN_PAGINATE_DATA', response.data.data)
+                resolve(response.data.data)
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    },
+    getDataProducts({state, commit}, payload){
+        return new Promise((resolve, reject) => {
+            $axios.get(`/operator/products`, {
+                params: {
+                    page: state.page,
+                    keyword: state.keyword
+                }
+            }).then(response => {
                 commit('ASSIGN_DATA', response.data.data)
                 resolve(response.data.data)
             }).catch(err => {
