@@ -154,7 +154,7 @@
 
 <script>
 import {mapState, mapActions} from 'vuex';
-import $axios from "../../services/api"
+import $axios from "@/services/api"
 
 export default {
     data(){
@@ -180,12 +180,6 @@ export default {
         this.getPaginateDataProducts()
     },
     computed:{
-        ...mapState('units', {
-            dataUnits: state => state.dataUnits
-        }),
-        ...mapState('categories', {
-            dataCategories: state => state.dataCategories
-        }),
         ...mapState('products', {
             dataPaginateProducts: state => state.dataPaginateProducts,
             page: state => state.page,
@@ -193,7 +187,7 @@ export default {
         }),
         unitsOptions(){
             let options =  []
-            this.dataUnits.map(data => {
+            this.$store.state.units.dataUnits.map(data => {
                 options.push({
                     value: data.id,
                     text: data.name
@@ -204,7 +198,7 @@ export default {
         },
         categoriesOptions(){
             let options =  []
-            this.dataCategories.map(data => {
+            this.$store.state.categories.dataCategories.map(data => {
                 options.push({
                     value: data.id,
                     text: data.name

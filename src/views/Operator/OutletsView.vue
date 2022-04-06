@@ -114,7 +114,7 @@
 
 <script>
 import {mapState, mapActions} from 'vuex';
-import $axios from "../../services/api"
+import $axios from "@/services/api"
 
 export default {
     data(){
