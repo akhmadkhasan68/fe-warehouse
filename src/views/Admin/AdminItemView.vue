@@ -73,13 +73,13 @@
                                             <p class="text-xs font-weight-bold mb-0">{{ data.name }}</p>
                                         </td>
                                         <td class="align-middle text-center">
-                                            <p class="text-xs font-weight-bold mb-0">{{ data.avg_price }}</p>
+                                            <p class="text-xs font-weight-bold mb-0">{{ formatRupiah(data.avg_price) }}</p>
                                         </td>
                                         <td class="align-middle text-center">
                                             <p class="text-xs font-weight-bold mb-0">{{ data.quantity}}</p>
                                         </td>
                                         <td class="align-middle text-center">
-                                            <p class="text-xs font-weight-bold mb-0">{{ data.quantity * data.avg_price }}</p>
+                                            <p class="text-xs font-weight-bold mb-0">{{ formatRupiah(data.quantity * data.avg_price) }}</p>
                                         </td>
                                     </tr>
                                 </tbody>
