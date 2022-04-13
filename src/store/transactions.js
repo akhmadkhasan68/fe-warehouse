@@ -1,13 +1,18 @@
 import $axios from "../services/api"
 
 const state = () => ({
-    datas: [],
-    page: 1
+    dataPaginateTransactions: [],
+    dataDetailTransaction: [],
+    page: 1,
 })
 
 const mutations = {
-    ASSIGN_DATA(state, payload) {
-        state.datas = payload
+    ASSIGN_PAGINATE_DATA(state, payload) {
+        state.dataPaginateTransactions = payload
+    },
+    
+    ASSIGN_DETAIL_DATA(state, payload) {
+        state.dataDetailTransaction = payload
     },
 
     SET_PAGE(state, payload) {
@@ -16,14 +21,29 @@ const mutations = {
  }
  
  const actions = {
-    getDataTable({state, commit}, payload){
+    getPaginateDataTransactions({commit, state}, payload){
         return new Promise((resolve, reject) => {
-            let search = typeof payload != 'undefined' ? payload:''
-            $axios.get(`/transactions`, {params: {page: state.page, q: search}}).then(response => {
-                commit('ASSIGN_DATA', response.data.data)
+            $axios.get(`/admin/transactions`, {
+                params: payload
+            })
+            .then((response) => {
+                commit('ASSIGN_PAGINATE_DATA', response.data.data)
                 resolve(response.data.data)
-            }).catch(err => {
-                reject(err);
+            })
+            .catch((error) => {
+                reject(error)
+            })
+        })
+    },
+    getDetailTransaction({commit, state}, payload){
+        return new Promise((resolve, reject) => {
+            $axios.get(`/admin/transactions/${payload}`)
+            .then(response => {
+                commit('ASSIGN_DETAIL_DATA', response.data.data)
+                resolve(response.data.data)
+            })
+            .catch(error => {
+                reject(error)
             })
         })
     },

@@ -124,7 +124,7 @@ export default {
                         product_id: "",
                         avg_price: 0,
                         price: "",
-                        quantity: 0
+                        quantity: ""
                     }
                 ]
             }
@@ -180,7 +180,7 @@ export default {
                 product_id: "",
                 avg_price: 0,
                 price: "",
-                quantity: 0
+                quantity: ""
             })
         },
         resetForm(){
@@ -195,7 +195,7 @@ export default {
                         product_id: "",
                         avg_price: 0,
                         price: "",
-                        quantity: 0
+                        quantity: ""
                     }
                 ]
             }
@@ -212,15 +212,25 @@ export default {
             }).catch(err => console.log(err))
         },
         saveAll(){
-            $axios.post(`/operator/transactions`, this.formData)
-            .then((response) => {
-                this.$toastr.s("Berhasil menambahkan transaksi");
-                this.resetForm()
-            })
-            .catch((error) => {
-                error.map(message => {
-                    this.$toastr.e(message);
-                })
+            this.$swal.fire({
+                title: 'Apakah anda yakin untuk menyimpan data ini?',
+                text: 'Pastikan data yang telah anda masukkan benar',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $axios.post(`/operator/transactions`, this.formData)
+                    .then((response) => {
+                        this.$toastr.s("Berhasil menambahkan transaksi");
+                        this.resetForm()
+                    })
+                    .catch((error) => {
+                        error.map(message => {
+                            this.$toastr.e(message);
+                        })
+                    })
+                }
             })
         },
     }

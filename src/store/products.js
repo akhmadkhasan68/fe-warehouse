@@ -5,7 +5,9 @@ const state = () => ({
     dataDetailProduct: [],
     dataPaginateProducts: [],
     page: 1,
-    keyword: ""
+    per_page: 10,
+    keyword: "",
+    category_id: ""
 })
 
 const mutations = {
@@ -24,20 +26,32 @@ const mutations = {
     SET_PAGE(state, payload) {
         state.page = payload
     },
+    
+    SET_PER_PAGE(state, payload) {
+        state.per_page = payload
+    },
 
     SET_KEYWORD(state, payload) {
         state.keyword = payload
+    },
+    
+    SET_CATEGORY(state, payload) {
+        state.category_id = payload
     },
  }
  
  const actions = {
     getPaginateDataProducts({state, commit}, payload){
+        let params = {
+            page: state.page,
+            keyword: state.keyword,
+            per_page: state.per_page
+        }
+        if(state.category_id != "") params.category_id = state.category_id
+        
         return new Promise((resolve, reject) => {
             $axios.get(`/operator/products/paginate`, {
-                params: {
-                    page: state.page,
-                    keyword: state.keyword
-                }
+                params: params
             }).then(response => {
                 commit('ASSIGN_PAGINATE_DATA', response.data.data)
                 resolve(response.data.data)
@@ -48,12 +62,7 @@ const mutations = {
     },
     getDataProducts({state, commit}, payload){
         return new Promise((resolve, reject) => {
-            $axios.get(`/operator/products`, {
-                params: {
-                    page: state.page,
-                    keyword: state.keyword
-                }
-            }).then(response => {
+            $axios.get(`/operator/products`).then(response => {
                 commit('ASSIGN_DATA', response.data.data)
                 resolve(response.data.data)
             }).catch(err => {

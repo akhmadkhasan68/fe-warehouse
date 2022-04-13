@@ -12,7 +12,9 @@ import OutletsView from '@/views/Operator/OutletsView.vue'
 import OperatorsView from '@/views/Operator/OperatorsView.vue'
 
 //Admin Component View
-import AdminHomeView from '@/views/Admin/AdminHomeView.vue'
+import AdminTransactionView from '@/views/Admin/AdminTransactionView.vue'
+import AdminTransactionDetailView from '@/views/Admin/AdminTransactionDetailView.vue'
+import AdminItemView from '@/views/Admin/AdminItemView.vue'
 
 import NotFoundView from '@/views/NotFoundView.vue'
 
@@ -21,109 +23,121 @@ import NotFoundView from '@/views/NotFoundView.vue'
 Vue.use(VueRouter)
 
 const routes = [
-    {
-        path: '/transactions',
-        name: 'operator.home',
-        component: OperatorHomeView,
-        children: [
-          {
-            path: "in",
-            name: "operator.transactions.in",
-            component: TransactionsInView,
-            meta:{
-              role: "operator",
-              title: "Transaksi Baru",
-              subtitle: "Transaksi Masuk"
-            }
-          },
-          {
-            path: "out",
-            name: "operator.transactions.out",
-            component: TransactionsOutView,
-            meta:{
-              role: "operator",
-              title: "Transaksi Baru",
-              subtitle: "Transaksi Keluar"
-            }
-          },
-        ],
-        meta: {
-          role: "operator",
-          title: "Transaksi Baru"
-        }
-      },
-      {
-        path: '/items',
-        name: 'operator.items',
-        component: ItemsView,
-        meta: {
-          role: "operator",
-          title: "Data Barang"
-        }
-      },
-      {
-        path: '/outlets',
-        name: 'operator.outlets',
-        component: OutletsView,
-        meta: {
-          role: "operator",
-          title: "Data Outlet"
-        }
-      },
-      {
-        path: '/operators',
-        name: 'operator.operators',
-        component: OperatorsView,
-        meta: {
-          role: "operator",
-          title: "Data Operator"
-        }
-      },
-      {
-        path: '/admin',
-        name: 'admin.home',
-        component: AdminHomeView,
-        meta: {
-          role: "admin",
-          title: "Data Transaksi"
-        }
-      },
-      {
-        path: '/admin/items',
-        name: 'admin.items',
-        component: AdminHomeView,
-        meta: {
-          role: "admin",
-          title: "Data Barang"
-        }
-      },
-      {
-        path: "/:pathMatch(.*)*",
-        component: NotFoundView,
-        meta: { errorNotFound: true }
-      }
+  {
+		path: '/transactions',
+		name: 'operator.home',
+		component: OperatorHomeView,
+		children: [{
+				path: "in",
+				name: "operator.transactions.in",
+				component: TransactionsInView,
+				meta: {
+					role: "operator",
+					title: "Transaksi Baru",
+					subtitle: "Transaksi Masuk"
+				}
+			},
+			{
+				path: "out",
+				name: "operator.transactions.out",
+				component: TransactionsOutView,
+				meta: {
+					role: "operator",
+					title: "Transaksi Baru",
+					subtitle: "Transaksi Keluar"
+				}
+			},
+		],
+		meta: {
+			role: "operator",
+			title: "Transaksi Baru"
+		}
+	},
+	{
+		path: '/items',
+		name: 'operator.items',
+		component: ItemsView,
+		meta: {
+			role: "operator",
+			title: "Data Barang"
+		}
+	},
+	{
+		path: '/outlets',
+		name: 'operator.outlets',
+		component: OutletsView,
+		meta: {
+			role: "operator",
+			title: "Data Outlet"
+		}
+	},
+	{
+		path: '/operators',
+		name: 'operator.operators',
+		component: OperatorsView,
+		meta: {
+			role: "operator",
+			title: "Data Operator"
+		}
+	},
+	{
+		path: '/admin/transactions',
+		name: 'admin.home',
+		component: AdminTransactionView,
+		meta: {
+			role: "admin",
+			title: "Data Transaksi"
+		}
+	},
+	{
+		path: '/admin/transactions/:id',
+		name: 'admin.transaction.detail',
+		component: AdminTransactionDetailView,
+		meta: {
+			role: "admin",
+			title: "Data Detail Transaksi"
+		}
+	},
+	{
+		path: '/admin/items',
+		name: 'admin.items',
+		component: AdminItemView,
+		meta: {
+			role: "admin",
+			title: "Data Barang"
+		}
+	},
+	{
+		path: "/:pathMatch(.*)*",
+		component: NotFoundView,
+		meta: {
+			errorNotFound: true
+		}
+	}
 ]
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes,
-  linkExactActiveClass: "active"
+	mode: 'history',
+	base: process.env.BASE_URL,
+	routes,
+	linkExactActiveClass: "active"
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.path == "/") {
-     next({name: "operator.home"})
-  } else {
-     next()
-  }
+	if (to.path == "/") {
+		next({
+			name: "operator.home"
+		})
+	} else {
+		next()
+	}
 })
 
 const DEFAULT_TITLE = 'App Gudang'
 router.afterEach(to => {
-   Vue.nextTick(() => {
-      document.title = `${DEFAULT_TITLE} | ${to.meta.title}` || DEFAULT_TITLE;
-   })
+	Vue.nextTick(() => {
+		document.title = `${DEFAULT_TITLE} | ${to.meta.title}` || DEFAULT_TITLE;
+	})
 })
 
 export default router

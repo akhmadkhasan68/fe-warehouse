@@ -39,7 +39,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-if="dataPaginateProducts.data.length == 0">
-                                        <td colspan="3" class="align-middle text-center">
+                                        <td colspan="5" class="align-middle text-center">
                                             <p class="text-xs font-weight-bold mb-0">Data Kosong!</p>
                                         </td>
                                     </tr>
